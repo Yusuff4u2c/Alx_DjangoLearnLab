@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+from django.db.models import Q
 # Create your views here.
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -40,3 +40,10 @@ def delete_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     book.delete()
     return redirect('book_list')
+
+
+
+def search_books(request):
+    query = request.GET.get('q')
+    books = Book.objects.filter(Q(title__icontains=query)) if query else []
+    return render(request, 'bookshelf/book_list.html', {'books': books})
