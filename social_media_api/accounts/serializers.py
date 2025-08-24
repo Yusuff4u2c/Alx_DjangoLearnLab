@@ -20,13 +20,16 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ["username", "email", "password", "token"]
 
     def create(self, validated_data):
-        user = User.objects.create_user(
+        # ✅ Create user
+        user = get_user_model().objects.create_user(
             username=validated_data["username"],
-            email=validated_data["email"],
+            email=validated_data.get("email"),
             password=validated_data["password"]
         )
+        # ✅ Create token
         token, _ = Token.objects.get_or_create(user=user)
-        user.token = token.key  # attach token to response
+        # attach token so it's returned in response
+        user.token = token.key
         return user
 
 
